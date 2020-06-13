@@ -5,7 +5,7 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "start webpack-dev-server --config webpack/webpack.dev.js --open",
+    "start": "start webpack-dev-server --config webpack/webpack.dev.js ",
     "build": "start webpack  --config webpack/webpack.prod.js",
     "watch": "start nodemon db --ignore frontend-js --ignore public/ && start webpack/webpack.dev.js --watch"
   },
