@@ -10,7 +10,7 @@ const debounce = (callback, delay) => {
 };
 
 const fetchData = async userInput => {
-  if (userInput === '') return;
+  if (userInput === '') return 'Clean input field';
   const response = await axios.get('http://www.omdbapi.com/', {
     params: {
       apikey: '3b88c541',
