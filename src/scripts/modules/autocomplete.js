@@ -1,6 +1,6 @@
 const { debounce } = require('./utils');
 
-const createAutocomplete = ({ root }) => {
+const createAutocomplete = ({ root, renderOption }) => {
   insertInitialHtml(root);
   const input = root.querySelector('input');
   const dropdown = root.querySelector('.dropdown');
@@ -33,10 +33,9 @@ const createAutocomplete = ({ root }) => {
   function showsOptions(responseFromApi) {
     for (const item of responseFromApi) {
       const option = document.createElement('a');
-      const imgSrc = item.Poster === 'N/A' ? '' : item.Poster;
 
       option.classList.add('dropdown-item');
-      option.innerHTML = `<img src="${imgSrc}"/>${item.Title}`;
+      option.innerHTML = renderOption(item);
 
       option.addEventListener('click', async e => {
         closeDropdown();
