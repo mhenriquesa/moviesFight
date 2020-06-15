@@ -1,5 +1,6 @@
 const { fetchData, debounce } = require('./scripts/modules/utils');
 
+const root = document.querySelector('.autocomplete');
 insertInitialHtml();
 
 const results = document.querySelector('.results');
@@ -8,8 +9,11 @@ const dropdown = document.querySelector('.dropdown');
 
 const test = input.addEventListener('input', debounce(requestApi, 1000));
 
+document.addEventListener('click', e => {
+  if (!root.contains(e.target)) dropdown.classList.remove('is-active');
+});
+
 function insertInitialHtml() {
-  const root = document.querySelector('.autocomplete');
   root.innerHTML = `
   <label><b>Search for a movie</b></label>
   <input type="text" class="input">
