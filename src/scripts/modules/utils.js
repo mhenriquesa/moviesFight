@@ -9,18 +9,6 @@ const debounce = (callback, delay) => {
   };
 };
 
-const fetchData = async userInput => {
-  if (userInput === '') return '';
-  const response = await axios.get('http://www.omdbapi.com/', {
-    params: {
-      apikey: '3b88c541',
-      s: userInput,
-    },
-  });
-  if (response.data.Error) return 'Movie not found';
-  return response.data.Search;
-};
 module.exports = {
   debounce,
-  fetchData,
 };
