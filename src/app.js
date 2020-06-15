@@ -3,6 +3,7 @@ const { fetchData, debounce } = require('./scripts/modules/utils');
 const root = document.querySelector('.autocomplete');
 insertInitialHtml();
 
+const summary = document.querySelector('.summary');
 const results = document.querySelector('.results');
 const input = document.querySelector('input');
 const dropdown = document.querySelector('.dropdown');
@@ -20,6 +21,7 @@ function insertInitialHtml() {
   <div class="dropdown-content results"></div>
   </div>
   </div>
+  <div class="summary"></div>
   `;
 }
 
@@ -59,17 +61,18 @@ function showsMoviesOptions(responseFromApi) {
     ${movie.Title}
     `;
 
-    option.addEventListener('click', e => {
+    option.addEventListener('click', async e => {
       closeDropdown();
       input.value = movie.Title;
-      requestApiForTitle(movie);
+
+      summary.innerHTML = '';
+      summary.innerHTML = movieTemplate(await requestApiForTitle(movie));
     });
 
     results.appendChild(option);
   }
 }
 
-const onMovieSelect = movie => {};
 function lookForMoviesWhenInput() {
   input.addEventListener('input', debounce(requestApi, 1000));
 }
@@ -80,12 +83,29 @@ function closeDropdownIfClicksOutside() {
   });
 }
 
-async function requestApiForTitle(movie) {
+async function requestApiForTitle(title) {
   const response = await axios.get('http://www.omdbapi.com/', {
     params: {
       apikey: '3b88c541',
-      i: movie.imdbID,
+      i: title.imdbID,
     },
   });
-  console.log(response.data);
+  return response.data;
 }
+
+const movieTemplate = movieDetail => {
+  return `
+  <article class="media">
+    <figure class="media-left">
+      <p class="image"><img src="${movieDetail.Poster}" /></p>
+    </figure>
+    <div class="media-content">
+      <div class="content">
+        <h1>${movieDetail.Title}</h1>
+        <h4>${movieDetail.Genre}</h4>
+        <p>${movieDetail.Plot}</p>
+      </div>
+    </div>
+  </article>
+  `;
+};
