@@ -49,6 +49,10 @@ async function requestApi(e) {
     <img src="${imgSrc}"/>
     ${movie.Title}
     `;
+    option.addEventListener('click', e => {
+      dropdown.classList.remove('is-active');
+      input.value = movie.Title;
+    });
 
     results.appendChild(option);
   }
