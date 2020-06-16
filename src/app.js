@@ -2,7 +2,7 @@ import { createAutocomplete } from './scripts/modules/autocomplete';
 const { requestApi } = require('./scripts/modules/requester');
 
 const autoCompleteConfig = {
-  root: document.querySelector('.autocomplete'),
+  rootElement: document.querySelector('.autocomplete'),
   renderOption(item) {
     const imgSrc = item.Poster === 'N/A' ? '' : item.Poster;
     return `<img src="${imgSrc}"/> ${item.Title} (${item.Year})`;
@@ -10,7 +10,7 @@ const autoCompleteConfig = {
   inputValue(item) {
     return item.Title;
   },
-  async whenSelectedOption(item) {
+  async actionAfterClickOption(item) {
     const summary = document.querySelector('.summary');
     const dataFromApi = await requestApi('http://www.omdbapi.com/', {
       apikey: '3b88c541',
@@ -19,7 +19,7 @@ const autoCompleteConfig = {
 
     summary.innerHTML = htmlSummary(dataFromApi);
   },
-  async whenUserInput(e) {
+  async actionAfterInput(e) {
     const responseFromApi = await requestApi('http://www.omdbapi.com/', {
       apikey: '3b88c541',
       s: e.target.value,

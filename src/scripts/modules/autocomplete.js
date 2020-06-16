@@ -1,41 +1,42 @@
 const { debounce } = require('./utils');
 
 const createAutocomplete = ({
-  root,
+  rootElement,
   renderOption,
   inputValue,
-  whenSelectedOption,
-  whenUserInput,
+  actionAfterOption,
+  actionAfterInput,
 }) => {
-  insertInitialHtml(root);
-  const input = root.querySelector('input');
-  const dropdown = root.querySelector('.dropdown');
-  const results = root.querySelector('.results');
-  const summary = document.querySelector('.summary');
+  insertInitialHtml(rootElement);
+  const input = rootElement.querySelector('input');
+  const dropdown = rootElement.querySelector('.dropdown');
+  const results = rootElement.querySelector('.results');
+  const summary = rootElement.querySelector('.summary');
 
-  lookForMoviesAfterTyped();
+  startSearchAfterType();
   closeDropdownIfClikedOutside();
 
-  function lookForMoviesAfterTyped() {
+  function startSearchAfterType() {
     input.addEventListener('input', debounce(onInput, 1000));
   }
   function closeDropdownIfClikedOutside() {
     document.addEventListener('click', e => {
-      if (!root.contains(e.target)) closeDropdown();
+      if (!rootElement.contains(e.target)) closeDropdown();
     });
   }
   async function onInput(e) {
-    const dataFromApi = await whenUserInput(e);
+    const response = await actionAfterInput(e);
 
     cleanSummaryUp();
-    results.innerHTML = '';
+    cleanDropdownUp();
 
-    if (!dataFromApi) {
-      closeDropdown();
-      return;
-    }
+    if (!response) return closeDropdown();
+
     openDropdown();
-    showsOptions(dataFromApi);
+    showsOptions(response);
+  }
+  function cleanDropdownUp() {
+    results.innerHTML = '';
   }
   function cleanSummaryUp() {
     summary.innerHTML = '';
@@ -46,8 +47,8 @@ const createAutocomplete = ({
   function closeDropdown() {
     return dropdown.classList.remove('is-active');
   }
-  function showsOptions(responseFromApi) {
-    for (const item of responseFromApi) {
+  function showsOptions(response) {
+    for (const item of response) {
       const optionElement = document.createElement('a');
 
       optionElement.classList.add('dropdown-item');
@@ -57,7 +58,7 @@ const createAutocomplete = ({
         closeDropdown();
         input.value = inputValue(item);
 
-        await whenSelectedOption(item);
+        await actionAfterOption(item);
       });
       results.appendChild(optionElement);
     }
