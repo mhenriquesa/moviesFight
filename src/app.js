@@ -1,25 +1,17 @@
 import { createAutocomplete } from './scripts/modules/autocomplete';
-const { requestApi } = require('./scripts/modules/requester');
 
 const autoCompleteConfig = {
   rootElement: document.querySelector('#left-autocomplete'),
+
+  inputValue(item) {
+    return item.Title;
+  },
+
   renderOption(item) {
     const imgSrc = item.Poster === 'N/A' ? '' : item.Poster;
     return `<img src="${imgSrc}"/> ${item.Title} (${item.Year})`;
   },
-  inputValue(item) {
-    return item.Title;
-  },
-  async actionAfterClickOption(item) {
-    const summary = document.querySelector('#left-summary');
-    const notification = document.querySelector('.tutorial');
-    const dataFromApi = await requestApi('http://www.omdbapi.com/', {
-      apikey: '3b88c541',
-      i: item.imdbID,
-    });
-    notification.classList.add('is-hidden');
-    summary.innerHTML = htmlSummary(dataFromApi);
-  },
+
   async actionAfterInput(e) {
     const responseFromApi = await requestApi('http://www.omdbapi.com/', {
       apikey: '3b88c541',
@@ -28,24 +20,41 @@ const autoCompleteConfig = {
     if (responseFromApi.Error) return '';
     return responseFromApi.Search;
   },
+
+  async actionAfterClickOption(item) {
+    const summary = document.querySelector('#left-summary');
+    const notification = document.querySelector('.tutorial');
+    const dataFromApi = await requestApi(
+      'http://www.omdbapi.com/',
+      {
+        apikey: '3b88c541',
+        i: item.imdbID,
+      },
+      'left'
+    );
+    notification.classList.add('is-hidden');
+    summary.innerHTML = htmlSummary(dataFromApi);
+  },
 };
 
 const autoCompleteConfig2 = Object.assign({}, autoCompleteConfig, {
   rootElement: document.querySelector('#right-autocomplete'),
+
   async actionAfterClickOption(item) {
     const summary = document.querySelector('#right-summary');
     const notification = document.querySelector('.tutorial');
-    const dataFromApi = await requestApi('http://www.omdbapi.com/', {
-      apikey: '3b88c541',
-      i: item.imdbID,
-    });
+    const dataFromApi = await requestApi(
+      'http://www.omdbapi.com/',
+      {
+        apikey: '3b88c541',
+        i: item.imdbID,
+      },
+      'right'
+    );
     notification.classList.add('is-hidden');
     summary.innerHTML = htmlSummary(dataFromApi);
   },
 });
-
-createAutocomplete(autoCompleteConfig);
-createAutocomplete(autoCompleteConfig2);
 
 const htmlSummary = movieDetail => {
   return `
@@ -80,3 +89,21 @@ const htmlSummary = movieDetail => {
 
 `;
 };
+
+let leftSide = null;
+let rightSide = null;
+
+const requestApi = async (url, params, side) => {
+  const response = await axios.get(url, {
+    params: params,
+  });
+
+  side === 'left' ? (leftSide = response.data) : (rightSide = response.data);
+
+  return response.data;
+};
+
+createAutocomplete(autoCompleteConfig);
+createAutocomplete(autoCompleteConfig2);
+console.log(leftSide);
+console.log(rightSide);
