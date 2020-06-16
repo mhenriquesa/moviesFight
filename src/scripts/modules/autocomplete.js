@@ -1,4 +1,5 @@
 const { debounce } = require('./utils');
+const { requestApi } = require('./requester');
 
 const createAutocomplete = ({ root, renderOption, inputValue, whenSelectedOption }) => {
   insertInitialHtml(root);
@@ -6,14 +7,17 @@ const createAutocomplete = ({ root, renderOption, inputValue, whenSelectedOption
   const dropdown = root.querySelector('.dropdown');
   const results = root.querySelector('.results');
 
-  input.addEventListener('input', debounce(requestApi, 1000));
+  input.addEventListener('input', debounce(onInput, 1000));
 
   document.addEventListener('click', e => {
     if (!root.contains(e.target)) closeDropdown();
   });
 
-  async function requestApi(e) {
-    const responseFromApi = await fetchData(e.target.value);
+  async function onInput(e) {
+    const responseFromApi = await requestApi('http://www.omdbapi.com/', {
+      apikey: '3b88c541',
+      s: e.target.value,
+    });
     if (!responseFromApi) return closeDropdown();
     openDropdown();
     cleanDropdownUp();
@@ -31,19 +35,18 @@ const createAutocomplete = ({ root, renderOption, inputValue, whenSelectedOption
   }
   function showsOptions(responseFromApi) {
     for (const item of responseFromApi) {
-      const option = document.createElement('a');
+      const optionElement = document.createElement('a');
 
-      option.classList.add('dropdown-item');
-      option.innerHTML = renderOption(item);
+      optionElement.classList.add('dropdown-item');
+      optionElement.innerHTML = renderOption(item);
 
-      option.addEventListener('click', async e => {
+      optionElement.addEventListener('click', async e => {
         closeDropdown();
         input.value = inputValue(item);
 
         whenSelectedOption(item);
       });
-
-      results.appendChild(option);
+      results.appendChild(optionElement);
     }
   }
 };
@@ -60,16 +63,4 @@ function insertInitialHtml(rootElement) {
   <div class="summary"></div>
   `;
 }
-
-const fetchData = async userInput => {
-  if (userInput === '') return '';
-  const response = await axios.get('http://www.omdbapi.com/', {
-    params: {
-      apikey: '3b88c541',
-      s: userInput,
-    },
-  });
-  if (response.data.Error) return '';
-  return response.data.Search;
-};
 module.exports = { createAutocomplete };

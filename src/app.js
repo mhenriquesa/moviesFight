@@ -1,4 +1,5 @@
 import { createAutocomplete } from './scripts/modules/autocomplete';
+const { requestApiForTitle } = require('./scripts/modules/requester');
 
 createAutocomplete({
   root: document.querySelector('.autocomplete'),
@@ -49,12 +50,3 @@ const htmlSummary = movieDetail => {
 
 `;
 };
-async function requestApiForTitle(title) {
-  const response = await axios.get('http://www.omdbapi.com/', {
-    params: {
-      apikey: '3b88c541',
-      i: title.imdbID,
-    },
-  });
-  return response.data;
-}
