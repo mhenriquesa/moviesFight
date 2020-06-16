@@ -2,7 +2,7 @@ import { createAutocomplete } from './scripts/modules/autocomplete';
 const { requestApi } = require('./scripts/modules/requester');
 
 const autoCompleteConfig = {
-  rootElement: document.querySelector('.autocomplete'),
+  rootElement: document.querySelector('#left-autocomplete'),
   renderOption(item) {
     const imgSrc = item.Poster === 'N/A' ? '' : item.Poster;
     return `<img src="${imgSrc}"/> ${item.Title} (${item.Year})`;
@@ -12,11 +12,12 @@ const autoCompleteConfig = {
   },
   async actionAfterClickOption(item) {
     const summary = document.querySelector('.summary');
+    const notification = document.querySelector('.tutorial');
     const dataFromApi = await requestApi('http://www.omdbapi.com/', {
       apikey: '3b88c541',
       i: item.imdbID,
     });
-
+    notification.classList.add('is-hidden');
     summary.innerHTML = htmlSummary(dataFromApi);
   },
   async actionAfterInput(e) {
@@ -29,7 +30,12 @@ const autoCompleteConfig = {
   },
 };
 
+const autoCompleteConfig2 = Object.assign({}, autoCompleteConfig, {
+  rootElement: document.querySelector('#right-autocomplete'),
+});
+
 createAutocomplete(autoCompleteConfig);
+createAutocomplete(autoCompleteConfig2);
 
 const htmlSummary = movieDetail => {
   return `

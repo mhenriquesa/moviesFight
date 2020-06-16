@@ -4,7 +4,7 @@ const createAutocomplete = ({
   rootElement,
   renderOption,
   inputValue,
-  actionAfterOption,
+  actionAfterClickOption,
   actionAfterInput,
 }) => {
   insertInitialHtml(rootElement);
@@ -58,7 +58,7 @@ const createAutocomplete = ({
         closeDropdown();
         input.value = inputValue(item);
 
-        await actionAfterOption(item);
+        await actionAfterClickOption(item);
       });
       results.appendChild(optionElement);
     }
