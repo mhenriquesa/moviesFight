@@ -18,11 +18,13 @@ const createAutocomplete = ({
   function startSearchAfterType() {
     input.addEventListener('input', debounce(onInput, 1000));
   }
+
   function closeDropdownIfClikedOutside() {
     document.addEventListener('click', e => {
       if (!rootElement.contains(e.target)) closeDropdown();
     });
   }
+
   async function onInput(e) {
     const response = await actionAfterInput(e);
 
@@ -33,6 +35,7 @@ const createAutocomplete = ({
     openDropdown();
     showsOptions(response);
   }
+
   function showsOptions(response) {
     for (const item of response) {
       const optionElement = document.createElement('a');
@@ -49,12 +52,15 @@ const createAutocomplete = ({
       results.appendChild(optionElement);
     }
   }
+
   function cleanDropdownUp() {
     results.innerHTML = '';
   }
+
   function openDropdown() {
     return dropdown.classList.add('is-active');
   }
+
   function closeDropdown() {
     return dropdown.classList.remove('is-active');
   }
@@ -69,7 +75,6 @@ function insertInitialHtml(rootElement) {
   <div class="dropdown-content results"></div>
   </div>
   </div>
-  
   `;
 }
 module.exports = { createAutocomplete };
