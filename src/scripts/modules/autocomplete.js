@@ -11,7 +11,6 @@ const createAutocomplete = ({
   const input = rootElement.querySelector('input');
   const dropdown = rootElement.querySelector('.dropdown');
   const results = rootElement.querySelector('.results');
-  const summary = rootElement.querySelector('.summary');
 
   startSearchAfterType();
   closeDropdownIfClikedOutside();
@@ -27,25 +26,12 @@ const createAutocomplete = ({
   async function onInput(e) {
     const response = await actionAfterInput(e);
 
-    cleanSummaryUp();
     cleanDropdownUp();
 
     if (!response) return closeDropdown();
 
     openDropdown();
     showsOptions(response);
-  }
-  function cleanDropdownUp() {
-    results.innerHTML = '';
-  }
-  function cleanSummaryUp() {
-    summary.innerHTML = '';
-  }
-  function openDropdown() {
-    return dropdown.classList.add('is-active');
-  }
-  function closeDropdown() {
-    return dropdown.classList.remove('is-active');
   }
   function showsOptions(response) {
     for (const item of response) {
@@ -63,6 +49,15 @@ const createAutocomplete = ({
       results.appendChild(optionElement);
     }
   }
+  function cleanDropdownUp() {
+    results.innerHTML = '';
+  }
+  function openDropdown() {
+    return dropdown.classList.add('is-active');
+  }
+  function closeDropdown() {
+    return dropdown.classList.remove('is-active');
+  }
 };
 
 function insertInitialHtml(rootElement) {
@@ -74,7 +69,7 @@ function insertInitialHtml(rootElement) {
   <div class="dropdown-content results"></div>
   </div>
   </div>
-  <div class="summary"></div>
+  
   `;
 }
 module.exports = { createAutocomplete };

@@ -11,7 +11,7 @@ const autoCompleteConfig = {
     return item.Title;
   },
   async actionAfterClickOption(item) {
-    const summary = document.querySelector('.summary');
+    const summary = document.querySelector('#left-summary');
     const notification = document.querySelector('.tutorial');
     const dataFromApi = await requestApi('http://www.omdbapi.com/', {
       apikey: '3b88c541',
@@ -32,6 +32,16 @@ const autoCompleteConfig = {
 
 const autoCompleteConfig2 = Object.assign({}, autoCompleteConfig, {
   rootElement: document.querySelector('#right-autocomplete'),
+  async actionAfterClickOption(item) {
+    const summary = document.querySelector('#right-summary');
+    const notification = document.querySelector('.tutorial');
+    const dataFromApi = await requestApi('http://www.omdbapi.com/', {
+      apikey: '3b88c541',
+      i: item.imdbID,
+    });
+    notification.classList.add('is-hidden');
+    summary.innerHTML = htmlSummary(dataFromApi);
+  },
 });
 
 createAutocomplete(autoCompleteConfig);
