@@ -1,7 +1,7 @@
 import { createAutocomplete } from './scripts/modules/autocomplete';
-const { requestApiForTitle } = require('./scripts/modules/requester');
+const { requestApi } = require('./scripts/modules/requester');
 
-createAutocomplete({
+const autoCompleteConfig = {
   root: document.querySelector('.autocomplete'),
   renderOption(item) {
     const imgSrc = item.Poster === 'N/A' ? '' : item.Poster;
@@ -12,10 +12,24 @@ createAutocomplete({
   },
   async whenSelectedOption(item) {
     const summary = document.querySelector('.summary');
-    summary.innerHTML = '';
-    summary.innerHTML = htmlSummary(await requestApiForTitle(item));
+    const dataFromApi = await requestApi('http://www.omdbapi.com/', {
+      apikey: '3b88c541',
+      i: item.imdbID,
+    });
+
+    summary.innerHTML = htmlSummary(dataFromApi);
   },
-});
+  async whenUserInput(e) {
+    const responseFromApi = await requestApi('http://www.omdbapi.com/', {
+      apikey: '3b88c541',
+      s: e.target.value,
+    });
+    if (responseFromApi.Error) return '';
+    return responseFromApi.Search;
+  },
+};
+
+createAutocomplete(autoCompleteConfig);
 
 const htmlSummary = movieDetail => {
   return `

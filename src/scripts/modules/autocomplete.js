@@ -1,37 +1,50 @@
 const { debounce } = require('./utils');
-const { requestApi } = require('./requester');
 
-const createAutocomplete = ({ root, renderOption, inputValue, whenSelectedOption }) => {
+const createAutocomplete = ({
+  root,
+  renderOption,
+  inputValue,
+  whenSelectedOption,
+  whenUserInput,
+}) => {
   insertInitialHtml(root);
   const input = root.querySelector('input');
   const dropdown = root.querySelector('.dropdown');
   const results = root.querySelector('.results');
+  const summary = document.querySelector('.summary');
 
-  input.addEventListener('input', debounce(onInput, 1000));
+  lookForMoviesAfterTyped();
+  closeDropdownIfClikedOutside();
 
-  document.addEventListener('click', e => {
-    if (!root.contains(e.target)) closeDropdown();
-  });
-
-  async function onInput(e) {
-    const responseFromApi = await requestApi('http://www.omdbapi.com/', {
-      apikey: '3b88c541',
-      s: e.target.value,
-    });
-    if (!responseFromApi) return closeDropdown();
-    openDropdown();
-    cleanDropdownUp();
-    showsOptions(responseFromApi);
+  function lookForMoviesAfterTyped() {
+    input.addEventListener('input', debounce(onInput, 1000));
   }
+  function closeDropdownIfClikedOutside() {
+    document.addEventListener('click', e => {
+      if (!root.contains(e.target)) closeDropdown();
+    });
+  }
+  async function onInput(e) {
+    const dataFromApi = await whenUserInput(e);
 
+    cleanSummaryUp();
+    results.innerHTML = '';
+
+    if (!dataFromApi) {
+      closeDropdown();
+      return;
+    }
+    openDropdown();
+    showsOptions(dataFromApi);
+  }
+  function cleanSummaryUp() {
+    summary.innerHTML = '';
+  }
   function openDropdown() {
     return dropdown.classList.add('is-active');
   }
   function closeDropdown() {
     return dropdown.classList.remove('is-active');
-  }
-  function cleanDropdownUp() {
-    results.innerHTML = '';
   }
   function showsOptions(responseFromApi) {
     for (const item of responseFromApi) {
@@ -44,7 +57,7 @@ const createAutocomplete = ({ root, renderOption, inputValue, whenSelectedOption
         closeDropdown();
         input.value = inputValue(item);
 
-        whenSelectedOption(item);
+        await whenSelectedOption(item);
       });
       results.appendChild(optionElement);
     }
