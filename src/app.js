@@ -55,38 +55,32 @@ const onClickOption = async (summary, side, item) => {
 };
 
 const runComparison = (left, right) => {
-  const htmlSummaryLeft = document.querySelector('.left-summary');
-  const htmlSummaryRight = document.querySelector('.right-summary');
-  const htmlImdbRatingLeft = htmlSummaryLeft.querySelector('.imdb-rating');
-  const htmlImdbRatingRight = htmlSummaryRight.querySelector('.imdb-rating');
-  const htmlOscarLeft = htmlSummaryLeft.querySelector('.awards');
-  const htmlOscarRight = htmlSummaryRight.querySelector('.awards');
+  const elementsLeftSide = document.querySelectorAll('.left-summary .notification');
+  const elementsRightSide = document.querySelectorAll('.right-summary .notification');
 
-  const imdbRatingRight = parseFloat(right.imdbRating);
-  const imdbRatingLeft = parseFloat(left.imdbRating);
+  elementsLeftSide.forEach((itemLeft, index) => {
+    const itemRight = elementsRightSide[index];
 
-  let oscarLeft = left.Awards.match(/Won (\d+) Oscar/);
-  let oscarRight = right.Awards.match(/Won (\d+) Oscar/);
+    const leftStatValue = Number(itemLeft.dataset.value);
+    const rightStatValue = Number(itemRight.dataset.value);
 
-  if (oscarLeft === null) oscarLeft = 0;
-  if (oscarRight === null) oscarRight = 0;
-  if (typeof oscarLeft[1] === 'string') oscarLeft = parseInt(oscarLeft[1]);
-  if (typeof oscarRight[1] === 'string') oscarRight = parseInt(oscarRight[1]);
-
-  console.log(oscarLeft, oscarRight);
-
-  htmlOscarLeft.classList.remove('winner');
-  htmlOscarRight.classList.remove('winner');
-  if (oscarLeft > oscarRight) htmlOscarLeft.classList.add('winner');
-  else htmlOscarRight.classList.add('winner');
-
-  htmlImdbRatingLeft.classList.remove('winner');
-  htmlImdbRatingRight.classList.remove('winner');
-  if (imdbRatingLeft > imdbRatingRight) htmlImdbRatingLeft.classList.add('winner');
-  else htmlImdbRatingRight.classList.add('winner');
+    itemLeft.classList.remove('winner');
+    itemRight.classList.remove('winner');
+    if (leftStatValue > rightStatValue) itemLeft.classList.add('winner');
+    else itemRight.classList.add('winner');
+  });
 };
 
 const htmlSummary = movieDetail => {
+  const metascore = parseInt(movieDetail.Metascore);
+  const imdbVotes = parseInt(movieDetail.imdbVotes.replace(/,/g, ''));
+  const imdbRating = parseFloat(movieDetail.imdbRating);
+  let oscar = movieDetail.Awards.match(/Won (\d+) Oscar/);
+  if (oscar === null) oscar = 0;
+  if (typeof oscar[1] === 'string') oscar = parseInt(oscar[1]);
+
+  console.log(metascore, imdbVotes, imdbRating, oscar);
+
   return `
 <article class="media">
   <figure class="media-left">
@@ -100,19 +94,19 @@ const htmlSummary = movieDetail => {
     </div>
   </div>
 </article>
-<article class="notification is-primary awards">
+<article data-value=${oscar} class="notification is-primary awards">
 <p class="title">${movieDetail.Awards}</p>
 <p class="subtitle">Awards</p>
 </article>
-<article class="notification is-primary imdb-rating">
+<article data-value=${imdbRating} class="notification is-primary imdb-rating">
 <p class="title">${movieDetail.imdbRating}</p>
 <p class="subtitle">imdb Rating</p>
 </article>
-<article class="notification is-primary metascore">
+<article data-value=${metascore} class="notification is-primary metascore">
 <p class="title">${movieDetail.Metascore}</p>
 <p class="subtitle">Metascore</p>
 </article>
-<article class="notification is-primary imdb-votes">
+<article data-value=${imdbVotes} class="notification is-primary imdb-votes">
 <p class="title">${movieDetail.imdbVotes}</p>
 <p class="subtitle">imdb Votes</p>
 </article>
