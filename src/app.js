@@ -55,22 +55,37 @@ const onClickOption = async (summary, side, item) => {
 };
 
 const runComparison = (left, right) => {
-  const htmlImdbRatingLeft = document
-    .querySelector('.left-summary')
-    .querySelector('.imdb-rating');
-
-  const htmlImdbRatingRight = document
-    .querySelector('.right-summary')
-    .querySelector('.imdb-rating');
+  const htmlSummaryLeft = document.querySelector('.left-summary');
+  const htmlSummaryRight = document.querySelector('.right-summary');
+  const htmlImdbRatingLeft = htmlSummaryLeft.querySelector('.imdb-rating');
+  const htmlImdbRatingRight = htmlSummaryRight.querySelector('.imdb-rating');
+  const htmlOscarLeft = htmlSummaryLeft.querySelector('.awards');
+  const htmlOscarRight = htmlSummaryRight.querySelector('.awards');
 
   const imdbRatingRight = parseFloat(right.imdbRating);
   const imdbRatingLeft = parseFloat(left.imdbRating);
+
+  let oscarLeft = left.Awards.match(/Won (\d+) Oscar/);
+  let oscarRight = right.Awards.match(/Won (\d+) Oscar/);
+
+  if (oscarLeft === null) oscarLeft = 0;
+  if (oscarRight === null) oscarRight = 0;
+  if (typeof oscarLeft[1] === 'string') oscarLeft = parseInt(oscarLeft[1]);
+  if (typeof oscarRight[1] === 'string') oscarRight = parseInt(oscarRight[1]);
+
+  console.log(oscarLeft, oscarRight);
+
+  htmlOscarLeft.classList.remove('winner');
+  htmlOscarRight.classList.remove('winner');
+  if (oscarLeft > oscarRight) htmlOscarLeft.classList.add('winner');
+  else htmlOscarRight.classList.add('winner');
 
   htmlImdbRatingLeft.classList.remove('winner');
   htmlImdbRatingRight.classList.remove('winner');
   if (imdbRatingLeft > imdbRatingRight) htmlImdbRatingLeft.classList.add('winner');
   else htmlImdbRatingRight.classList.add('winner');
 };
+
 const htmlSummary = movieDetail => {
   return `
 <article class="media">
